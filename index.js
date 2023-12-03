@@ -59,15 +59,15 @@ async function run() {
     //   res.send(result)
     // })
 
-    app.get('/users/admin/:email', async(req,res)=>{
+    app.get('/users/admin/:email', async (req, res) => {
       const email = req.params.email
-      const query = {email: email}
-        const user = await userCollection.findOne(query)
-        let admin = false;
-        if(user){
-          admin = user?.role === 'admin'
-        }
-        res.send({admin})
+      const query = { email: email }
+      const user = await userCollection.findOne(query)
+      let admin = false;
+      if (user) {
+        admin = user?.role === 'admin'
+      }
+      res.send({ admin })
     })
 
     app.get('/pets/:id', async (req, res) => {
@@ -84,40 +84,50 @@ async function run() {
     })
 
     app.get('/pets', async (req, res) => {
-      let query  ={}
+      let query = {}
       const email = req.query.email
-      if(email){
-        query = {email:email}
+      if (email) {
+        query = { email: email }
       }
-      const result = await petCollection.find(query).sort({date:-1}).toArray()
+      const result = await petCollection.find(query).sort({ date: -1 }).toArray()
       res.send(result)
     })
 
     app.get('/campaigns', async (req, res) => {
-      const cursor = campaignCollection.find().sort({PostDate:-1})
+      let query = {}
+      const email = req.query.email
+      if (email) {
+        query = { email: email }
+      }
+      const result = await campaignCollection.find(query).sort({ date: -1 }).toArray()
+      res.send(result)
+    })
+
+    // app.get('/campaigns', async (req, res) => {
+    //   const cursor = campaignCollection.find().sort({PostDate:-1})
+    //   const result = await cursor.toArray()
+    //   res.send(result)
+    // })
+
+    app.get('/adoptions', async (req, res) => {
+      const cursor = adoptionCollection.find().sort({ PostDate: -1 })
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/adoptions', async (req, res) => {
-      const cursor = adoptionCollection.find().sort({PostDate:-1})
-      const result = await cursor.toArray()
-      res.send(result)
-    })
-    
     app.get('/users', async (req, res) => {
       const cursor = userCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
-    
+
     app.get('/petCategory', async (req, res) => {
       const cursor = petCategoryCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    
+
 
     app.post('/users', async (req, res) => {
       const usersData = req.body
@@ -178,6 +188,24 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/campaigns/:id', async (req, res) => {
+      const item = req.body
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          photo: item.photo,
+          name: item.name,
+          amount: item.amount,
+          date: item.date,
+          description: item.description,
+          longDescription: item.longDescription,
+        }
+      }
+      const result = await campaignCollection.updateOne(filter, updatedDoc)
+      res.send(result)
+    })
+
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
@@ -207,7 +235,7 @@ async function run() {
       const filter = { _id: new ObjectId(id) }
       const updateDoc = {
         $set: {
-          status:'accepted'
+          status: 'accepted'
         },
       };
       const result = await adoptionCollection.updateOne(filter, updateDoc)
