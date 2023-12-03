@@ -34,31 +34,6 @@ async function run() {
     const adoptionCollection = client.db('petDB').collection('adoptions')
     const donationCollection = client.db('petDB').collection('donations')
 
-    // app.get('/pets', async (req, res) => {
-    //   const cursor = petCollection.find()
-    //   const result = await cursor.toArray()
-    //   res.send(result)
-    // })
-
-    // app.get('/users/pets', async (req, res) => {
-    //   const queryEmail = req.query.email
-    //   const queryCategory = req.query.category
-    //   let query = {};
-    //   if (queryEmail) {
-    //     query.email = queryEmail || ""
-    //   }
-    //   if (queryCategory) {
-    //     query.category = queryCategory || ""
-    //   }
-    //   const options = {
-    //     sort: {
-    //       dateAndTime: -1,
-    //     }
-    //   }
-    //   const result = await petCollection.find(query, options).toArray();
-    //   res.send(result)
-    // })
-
     app.get('/users/admin/:email', async (req, res) => {
       const email = req.params.email
       const query = { email: email }
@@ -103,11 +78,6 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/campaigns', async (req, res) => {
-    //   const cursor = campaignCollection.find().sort({PostDate:-1})
-    //   const result = await cursor.toArray()
-    //   res.send(result)
-    // })
 
     app.get('/adoptions', async (req, res) => {
       const cursor = adoptionCollection.find().sort({ PostDate: -1 })
@@ -211,7 +181,7 @@ async function run() {
       const filter = { _id: new ObjectId(id) }
       const updateDoc = {
         $set: {
-          role: 
+          role: 'admin'
         },
       };
       const result = await userCollection.updateOne(filter, updateDoc)
@@ -253,6 +223,20 @@ async function run() {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await adoptionCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    app.delete('/campaigns/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await campaignCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    app.delete('/pets/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await petCollection.deleteOne(query)
       res.send(result)
     })
 
