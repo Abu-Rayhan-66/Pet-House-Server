@@ -32,6 +32,7 @@ async function run() {
     const campaignCollection = client.db('petDB').collection('campaigns')
     const petCategoryCollection = client.db('petDB').collection('petCategory')
     const adoptionCollection = client.db('petDB').collection('adoptions')
+    const donationCollection = client.db('petDB').collection('donations')
 
     // app.get('/pets', async (req, res) => {
     //   const cursor = petCollection.find()
@@ -73,6 +74,12 @@ async function run() {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await petCollection.findOne(query)
+      res.send(result)
+    })
+    app.get('/campaigns/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await campaignCollection.findOne(query)
       res.send(result)
     })
 
@@ -122,6 +129,13 @@ async function run() {
       const newPet = req.body
       console.log(newPet)
       const result = await petCollection.insertOne(newPet)
+      res.send(result)
+    })
+
+    app.post('/donations', async (req, res) => {
+      const newDonation = req.body
+      console.log(newDonation)
+      const result = await donationCollection.insertOne(newDonation)
       res.send(result)
     })
 
