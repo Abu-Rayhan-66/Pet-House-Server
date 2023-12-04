@@ -3,6 +3,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require('stripe')(process.env.STRIPE_SECRETS_KEY)
 const app = express();
 const port = process.env.PORT || 5002
 
@@ -123,6 +124,20 @@ async function run() {
       console.log(newDonation)
       const result = await donationCollection.insertOne(newDonation)
       res.send(result)
+    })
+
+    app.post('/create-payment-intent', async (req, res) => {
+      const { price } = req.body
+      const amount = parseInt(price * 100)
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types:['card']
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      })
     })
 
     app.post('/adoptions', async (req, res) => {
