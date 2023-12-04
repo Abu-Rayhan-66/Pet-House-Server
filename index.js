@@ -79,6 +79,16 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/donations', async (req, res) => {
+      let query = {}
+      const email = req.query.email
+      if (email) {
+        query = { email: email }
+      }
+      const result = await donationCollection.find(query).sort({ date: -1 }).toArray()
+      res.send(result)
+    })
+
 
     app.get('/adoptions', async (req, res) => {
       const cursor = adoptionCollection.find().sort({ PostDate: -1 })
@@ -119,6 +129,7 @@ async function run() {
       res.send(result)
     })
 
+    // donations intent
     app.post('/donations', async (req, res) => {
       const newDonation = req.body
       console.log(newDonation)
